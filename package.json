@@ -8,9 +8,21 @@
     "start": "next start"
   },
   "dependencies": {
+    "@midl/connectors": "^3.0.5",
+    "@midl/core": "^3.0.5",
+    "@midl/executor": "^3.0.5",
+    "@midl/executor-react": "^3.0.5",
+    "@midl/react": "^3.0.5",
+    "@tanstack/react-query": "^5.90.21",
     "next": "16.1.6",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "viem": "npm:@midl/viem@2.21.39"
+  },
+  "pnpm": {
+    "overrides": {
+      "viem": "npm:@midl/viem@2.21.39"
+    }
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
