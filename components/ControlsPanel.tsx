@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWalletConnection } from "@/hooks/useWalletConnection";
 
 const DIVIDER = "1px solid var(--border)";
@@ -279,6 +279,108 @@ function ConnectButton({
   );
 }
 
+function TwoAddressBugCard({
+  paymentAddress,
+  ordinalsAddress,
+  onDismiss,
+}: {
+  paymentAddress: string;
+  ordinalsAddress: string;
+  onDismiss: () => void;
+}) {
+  return (
+    <div
+      style={{
+        margin: "0 20px 4px",
+        border: "1px solid var(--border-hi)",
+        borderLeft: "3px solid var(--yellow)",
+        borderRadius: "3px",
+        background: "rgba(234, 179, 8, 0.04)",
+        padding: "12px 14px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+      }}
+    >
+      <span
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.55rem",
+          color: "var(--muted)",
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+        }}
+      >
+        // common mistake
+      </span>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "0.6rem", color: "var(--yellow)", fontFamily: "var(--font-mono)", minWidth: "52px" }}>payment</span>
+          <span style={{ fontSize: "0.55rem", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{trunc(paymentAddress, 8, 6)}</span>
+          <span style={{ fontSize: "0.55rem", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>→ pays BTC fees</span>
+          <span style={{ fontSize: "0.5rem", color: "var(--muted)", fontFamily: "var(--font-mono)", opacity: 0.6 }}>← P2WPKH</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "0.6rem", color: "var(--orange)", fontFamily: "var(--font-mono)", minWidth: "52px" }}>ordinals</span>
+          <span style={{ fontSize: "0.55rem", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{trunc(ordinalsAddress, 8, 6)}</span>
+          <span style={{ fontSize: "0.55rem", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>→ your EVM identity</span>
+          <span style={{ fontSize: "0.5rem", color: "var(--muted)", fontFamily: "var(--font-mono)", opacity: 0.6 }}>← P2TR</span>
+        </div>
+      </div>
+
+      <span
+        style={{
+          fontSize: "0.6rem",
+          color: "var(--text)",
+          fontFamily: "var(--font-mono)",
+          lineHeight: 1.6,
+          opacity: 0.8,
+        }}
+      >
+        Mixing these up breaks EVM transactions silently. MIDL derives your 0x
+        address from the P2TR key, not the payment address.
+      </span>
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <button
+          onClick={onDismiss}
+          style={{
+            background: "transparent",
+            border: "1px solid var(--border-hi)",
+            borderRadius: "2px",
+            color: "var(--muted)",
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.55rem",
+            letterSpacing: "0.06em",
+            padding: "3px 8px",
+            cursor: "pointer",
+          }}
+        >
+          dismiss
+        </button>
+        <a
+          href="https://docs.midl.xyz"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            border: "1px solid var(--border-hi)",
+            borderRadius: "2px",
+            color: "var(--muted)",
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.55rem",
+            padding: "3px 8px",
+            textDecoration: "none",
+            letterSpacing: "0.06em",
+          }}
+        >
+          ?
+        </a>
+      </div>
+    </div>
+  );
+}
+
 interface ControlsPanelProps {
   onRun: (opts: { feeRate?: number; debugMode?: boolean }) => void;
   onReset: () => void;
@@ -300,6 +402,7 @@ export default function ControlsPanel({ onRun, onReset, traceStatus }: ControlsP
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [connectError, setConnectError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [addrCardDismissed, setAddrCardDismissed] = useState(false);
   const [opts, setOpts] = useState<Opts>({
     preCacheChainId: false,
     customFeeRate: false,
@@ -332,25 +435,23 @@ export default function ControlsPanel({ onRun, onReset, traceStatus }: ControlsP
   const paymentAddress = paymentAccount?.address ?? "";
   const ordinalsAddress = ordinalsAccount?.address ?? "";
 
+  useEffect(() => {
+    setAddrCardDismissed(
+      localStorage.getItem("midl-txsim-addr-dismissed") === "true"
+    );
+  }, []);
+
+  const dismissAddrCard = () => {
+    localStorage.setItem("midl-txsim-addr-dismissed", "true");
+    setAddrCardDismissed(true);
+  };
+
   return (
     <>
       {/* Spin keyframe injected once */}
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
-      <aside
-        style={{
-          width: "380px",
-          flexShrink: 0,
-          position: "sticky",
-          top: "52px",
-          height: "calc(100vh - 52px)",
-          overflowY: "auto",
-          borderRight: DIVIDER,
-          background: "var(--bg)",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+      <aside className="controls-panel">
         {/* ── Section 1: Wallet ─────────────────────────────── */}
         <div style={{ padding: "20px", borderBottom: DIVIDER }}>
           {isConnected && paymentAddress && ordinalsAddress ? (
@@ -412,6 +513,17 @@ export default function ControlsPanel({ onRun, onReset, traceStatus }: ControlsP
             </div>
           )}
         </div>
+
+        {/* ── Two-address bug card (dismissible, shows once) ── */}
+        {isConnected && !addrCardDismissed && paymentAddress && ordinalsAddress && (
+          <div style={{ paddingTop: "12px", borderBottom: DIVIDER }}>
+            <TwoAddressBugCard
+              paymentAddress={paymentAddress}
+              ordinalsAddress={ordinalsAddress}
+              onDismiss={dismissAddrCard}
+            />
+          </div>
+        )}
 
         {/* ── Section 2: Why two addresses? ─────────────────── */}
         <div style={{ borderBottom: DIVIDER }}>
@@ -744,6 +856,7 @@ export default function ControlsPanel({ onRun, onReset, traceStatus }: ControlsP
             </button>
           )}
           <button
+            className="run-btn"
             disabled={!isConnected || traceStatus === "running"}
             onClick={() =>
               isConnected &&

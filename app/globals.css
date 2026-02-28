@@ -135,6 +135,66 @@ body {
   border-radius: 1px;
 }
 
+/* ─── Panel layout ───────────────────────────────────────────── */
+
+.panel-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.controls-panel {
+  width: 380px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 52px;
+  height: calc(100vh - 52px);
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.trace-panel {
+  flex: 1;
+  height: calc(100vh - 52px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .panel-layout {
+    flex-direction: column;
+    overflow: auto;
+  }
+
+  .controls-panel {
+    width: 100%;
+    height: auto;
+    position: static;
+    overflow-y: visible;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .trace-panel {
+    height: auto;
+    min-height: 60vh;
+  }
+
+  .nav-link-secondary {
+    display: none;
+  }
+
+  .run-btn {
+    min-height: 56px;
+  }
+}
+
 /* ─── Input reset ────────────────────────────────────────────── */
 
 input[type="number"]::-webkit-inner-spin-button,

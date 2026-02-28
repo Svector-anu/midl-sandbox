@@ -1,5 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import type { TraceBadge, TraceEvent, TracePhase, TraceState } from "@/types/trace";
-import { BLOCKSCOUT_URL, MEMPOOL_URL } from "@/lib/constants";
+import { BLOCKSCOUT_URL, FAUCET_URL, MEMPOOL_URL } from "@/lib/constants";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -27,6 +30,25 @@ const BADGE_COLORS: Record<TraceBadge, string> = {
   WALLET: "var(--green)",
   "BTC+EVM": "var(--muted-hi)",
 };
+
+const PHASE_EXPLANATIONS: { phase: string; text: string }[] = [
+  {
+    phase: "PHASE 0 — EVM Prefetch",
+    text: "Before touching Bitcoin, MIDL checks the EVM state: your nonce, chain ID, and gas estimate. These are standard Ethereum RPC calls — the same ones viem makes on any EVM chain.",
+  },
+  {
+    phase: "PHASE 1 — Add Intention",
+    text: "addTxIntention() describes what you want to do on the EVM layer. It doesn't send anything yet — it just builds the calldata and queues the intention locally.",
+  },
+  {
+    phase: "PHASE 2 — BTC Signing",
+    text: "finalizeBTCTransaction() calls estimateGasMulti() — a MIDL-specific RPC method that doesn't exist in standard viem. This is why the @midl/viem override is required. It then builds a PSBT (Partially Signed Bitcoin Transaction), selects your UTXOs, and opens your wallet for signing.",
+  },
+  {
+    phase: "PHASE 3 — Broadcast + Confirm",
+    text: "Your signed Bitcoin transaction is broadcast to the Bitcoin network. The EVM intent is signed with a reference to that BTC txid, then submitted to the MIDL sequencer. Confirmation takes 10–15 min on staging because the EVM state change is anchored to a real Bitcoin block.",
+  },
+];
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
@@ -330,9 +352,213 @@ function SummaryBar({ trace }: { trace: TraceState }) {
   );
 }
 
+function WhatHappenedCard() {
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    <div
+      style={{
+        margin: "16px 24px",
+        border: "1px solid var(--border-hi)",
+        borderLeft: "3px solid var(--orange)",
+        borderRadius: "3px",
+        background: "var(--surface)",
+      }}
+    >
+      <button
+        onClick={() => setCollapsed((c) => !c)}
+        style={{
+          width: "100%",
+          padding: "12px 16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: "transparent",
+          border: "none",
+          cursor: "pointer",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.7rem",
+            color: "var(--orange)",
+            letterSpacing: "0.06em",
+          }}
+        >
+          // what just happened?
+        </span>
+        <span
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.65rem",
+            color: "var(--muted)",
+          }}
+        >
+          {collapsed ? "▸ expand" : "▾ collapse"}
+        </span>
+      </button>
+
+      {!collapsed && (
+        <div
+          style={{
+            padding: "0 16px 16px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+          }}
+        >
+          {PHASE_EXPLANATIONS.map(({ phase, text }) => (
+            <div key={phase} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "0.6rem",
+                  color: "var(--orange)",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {phase}
+              </span>
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "0.75rem",
+                  color: "var(--muted)",
+                  lineHeight: 1.7,
+                }}
+              >
+                {text}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function NoUtxoErrorCard({ paymentAddress }: { paymentAddress?: string }) {
+  return (
+    <div
+      style={{
+        margin: "16px 24px",
+        border: "1px solid var(--orange-dim)",
+        borderLeft: "3px solid var(--orange)",
+        borderRadius: "3px",
+        background: "rgba(247, 83, 31, 0.06)",
+        padding: "16px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "12px",
+      }}
+    >
+      <span
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.65rem",
+          color: "var(--red)",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+        }}
+      >
+        ✕ no testnet btc
+      </span>
+      <span
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.65rem",
+          color: "var(--muted)",
+          lineHeight: 1.6,
+        }}
+      >
+        Your wallet has no spendable UTXOs on staging.
+      </span>
+      <a
+        href={FAUCET_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          display: "block",
+          padding: "10px 16px",
+          background: "var(--orange)",
+          color: "#000",
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.7rem",
+          fontWeight: 600,
+          letterSpacing: "0.06em",
+          textDecoration: "none",
+          borderRadius: "3px",
+          textAlign: "center",
+        }}
+      >
+        Get testnet BTC at faucet.midl.xyz →
+      </a>
+      <span
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.6rem",
+          color: "var(--muted)",
+          lineHeight: 1.5,
+        }}
+      >
+        After receiving BTC, wait ~30s then try again.
+      </span>
+      {paymentAddress && (
+        <div
+          style={{
+            padding: "6px 10px",
+            background: "var(--surface)",
+            border: "1px solid var(--border-hi)",
+            borderRadius: "2px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "3px",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.55rem",
+              color: "var(--muted)",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}
+          >
+            fund this address
+          </span>
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.6rem",
+              color: "var(--yellow)",
+              wordBreak: "break-all",
+            }}
+          >
+            {paymentAddress}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Main component ──────────────────────────────────────────────────────────
 
-export default function TracePanel({ trace }: { trace: TraceState }) {
+function isUtxoError(msg?: string): boolean {
+  if (!msg) return false;
+  const lower = msg.toLowerCase();
+  return lower.includes("faucet") || lower.includes("utxos") || lower.includes("utxo");
+}
+
+export default function TracePanel({
+  trace,
+  paymentAddress,
+}: {
+  trace: TraceState;
+  paymentAddress?: string;
+}) {
   const eventsByPhase = PHASE_ORDER.reduce<Record<TracePhase, TraceEvent[]>>(
     (acc, phase) => {
       acc[phase] = trace.events.filter((e) => e.phase === phase);
@@ -346,19 +572,19 @@ export default function TracePanel({ trace }: { trace: TraceState }) {
   );
 
   const isIdle = trace.status === "idle";
+  const showUtxoCard =
+    trace.status === "error" && isUtxoError(trace.errorMessage);
 
   return (
-    <main
-      style={{
-        flex: 1,
-        height: "calc(100vh - 52px)",
-        overflowY: "auto",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {/* Summary bar — shown when done or error */}
-      {!isIdle && <SummaryBar trace={trace} />}
+    <main className="trace-panel">
+      {/* No-UTXO error card — replaces summary bar */}
+      {showUtxoCard && <NoUtxoErrorCard paymentAddress={paymentAddress} />}
+
+      {/* Summary bar — shown when done or generic error */}
+      {!isIdle && !showUtxoCard && <SummaryBar trace={trace} />}
+
+      {/* "What just happened?" explainer — shown after successful completion */}
+      {trace.status === "done" && <WhatHappenedCard />}
 
       {/* Empty state */}
       {isIdle && (

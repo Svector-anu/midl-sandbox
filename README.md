@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MIDL TxSim
 
-## Getting Started
+Visualize every step of the MIDL 4-step transaction flow in real time.
 
-First, run the development server:
+MIDL is a Bitcoin-anchored EVM L2. Unlike standard EVM chains, every write
+operation goes through a 4-step protocol that anchors state changes to Bitcoin.
+This tool makes that flow visible — every RPC call, every SDK step, every
+millisecond.
+
+## What you'll see
+
+1. **EVM Prefetch** — eth_chainId, nonce, estimateGasMulti
+2. **Add Intention** — addTxIntention() queues the EVM calldata
+3. **BTC Signing** — PSBT construction + wallet signing popup
+4. **Broadcast + Confirm** — Bitcoin broadcast → EVM confirmation (~10-15 min)
+
+## Why this exists
+
+The #1 onboarding failure on MIDL is developers treating it like a standard EVM
+chain. This tool shows exactly where MIDL diverges from Ethereum and why.
+
+## Common issues surfaced
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `estimateGasMulti is not a function` | Missing viem override | Add `"viem": "npm:@midl/viem@2.21.39"` to package.json |
+| `No spendable UTXOs` | No testnet BTC | Get BTC at faucet.midl.xyz |
+| `unknown account` | Using standard wagmi instead of MIDL executor flow | Use useAddTxIntention, not useWriteContract |
+| `system contract not found` | Wrong RPC URL | Use https://rpc.staging.midl.xyz |
+| EVM tx not found | Mixed up payment vs ordinals account | EVM identity comes from P2TR (ordinals), not P2WPKH (payment) |
+
+## Stack
+
+- Next.js 16 + TypeScript + Tailwind v4
+- @midl/core, @midl/react, @midl/executor, @midl/executor-react
+- @midl/viem@2.21.39 (override required)
+
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000, connect Xverse or Leather, click Run Transaction.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Built by
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Svector-anu — DevEx Ambassador, MIDL

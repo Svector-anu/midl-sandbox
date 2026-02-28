@@ -69,11 +69,16 @@ export default function Nav() {
           href="https://docs.midl.xyz"
           target="_blank"
           rel="noopener noreferrer"
-          className="nav-link"
+          className="nav-link nav-link-secondary"
         >
           docs ↗
         </a>
-        <a href="#" className="nav-link">
+        <a
+          href="https://github.com/Svector-anu/midl-sandbox"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="nav-link nav-link-secondary"
+        >
           github ↗
         </a>
       </div>
