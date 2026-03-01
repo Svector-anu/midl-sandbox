@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Syne } from "next/font/google";
+import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import MidlProviders from "@/providers/MidlProviders";
 import "./globals.css";
 
@@ -8,9 +8,10 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
-const syne = Syne({
+const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -33,17 +34,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${jetbrainsMono.variable} ${syne.variable} antialiased`}
+        className={`${jetbrainsMono.variable} ${plusJakartaSans.variable} antialiased`}
         style={{ background: "#080808" }}
       >
-        <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
-          <defs>
-            <filter id="glass-distort" x="-20%" y="-20%" width="140%" height="140%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves={3} seed={2} result="noise" />
-              <feDisplacementMap in="SourceGraphic" in2="noise" scale={4} xChannelSelector="R" yChannelSelector="G" result="displaced" />
-            </filter>
-          </defs>
-        </svg>
         <MidlProviders>{children}</MidlProviders>
       </body>
     </html>

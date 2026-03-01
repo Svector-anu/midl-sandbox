@@ -3,6 +3,16 @@
 import { useEffect, useState } from "react";
 import { useWalletConnection } from "@/hooks/useWalletConnection";
 
+function classifyError(err: unknown): string {
+  const msg = err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
+  if (msg.includes("not found") || msg.includes("not installed") || msg.includes("not detected") || msg.includes("provider"))
+    return "Wallet not detected. Make sure it's installed and active.";
+  if (msg.includes("rejected") || msg.includes("cancelled") || msg.includes("denied") || msg.includes("cancel"))
+    return "Connection rejected.";
+  const raw = err instanceof Error ? err.message : String(err);
+  return raw.length > 80 ? raw.slice(0, 80) + "…" : raw;
+}
+
 function trunc(address: string, head = 6, tail = 4): string {
   if (address.length <= head + tail + 3) return address;
   return `${address.slice(0, head)}...${address.slice(-tail)}`;
@@ -82,11 +92,28 @@ function TwoAddressBugCard({
 }
 
 export default function WalletCard() {
-  const { disconnect, isConnected, paymentAccount, ordinalsAccount, evmAddress } =
+  const { connectors, connectAsync, disconnect, isConnected, isConnecting, paymentAccount, ordinalsAccount, evmAddress } =
     useWalletConnection();
 
+  const [pendingId, setPendingId] = useState<string | null>(null);
+  const [connectError, setConnectError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [addrCardDismissed, setAddrCardDismissed] = useState(false);
+
+  const xverse = connectors.find((c) => c.metadata?.name?.toLowerCase().includes("xverse"));
+  const leather = connectors.find((c) => c.metadata?.name?.toLowerCase().includes("leather"));
+
+  const handleConnect = async (id: string) => {
+    setPendingId(id);
+    setConnectError(null);
+    try {
+      await connectAsync({ id });
+    } catch (err) {
+      setConnectError(classifyError(err));
+    } finally {
+      setPendingId(null);
+    }
+  };
 
   useEffect(() => {
     setAddrCardDismissed(localStorage.getItem("midl-txsim-addr-dismissed") === "true");
@@ -140,10 +167,58 @@ export default function WalletCard() {
           )}
         </>
       ) : (
-        <div style={{ padding: "16px" }}>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "var(--muted)", letterSpacing: "0.06em" }}>
-            Connect a wallet from the navbar above to begin.
-          </span>
+        <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          <div style={{ display: "flex", gap: "8px" }}>
+            {[
+              { label: "Xverse", connector: xverse },
+              { label: "Leather", connector: leather },
+            ].map(({ label, connector }) => (
+              <button
+                key={label}
+                disabled={isConnecting}
+                onClick={() => connector && handleConnect(connector.id)}
+                style={{
+                  flex: 1,
+                  height: "36px",
+                  background: "transparent",
+                  border: "1px solid var(--border-hi)",
+                  borderRadius: "4px",
+                  fontFamily: "var(--font-sans)",
+                  fontSize: "0.72rem",
+                  fontWeight: 500,
+                  color: "var(--muted-hi)",
+                  cursor: isConnecting ? "not-allowed" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px",
+                  transition: "border-color 0.15s, color 0.15s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "var(--orange)";
+                  e.currentTarget.style.color = "var(--orange)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "var(--border-hi)";
+                  e.currentTarget.style.color = "var(--muted-hi)";
+                }}
+              >
+                {pendingId === connector?.id && (
+                  <span style={{ display: "inline-block", width: "8px", height: "8px", border: "1px solid currentColor", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+                )}
+                {label}
+              </button>
+            ))}
+          </div>
+          {connectError && (
+            <p style={{ margin: 0, fontSize: "0.6rem", fontFamily: "var(--font-mono)", color: "var(--red)", lineHeight: 1.5 }}>
+              {connectError}
+            </p>
+          )}
+          <a href="https://faucet.midl.xyz" target="_blank" rel="noopener noreferrer" className="faucet-link">
+            No testnet BTC? → faucet.midl.xyz
+          </a>
         </div>
       )}
 
