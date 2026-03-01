@@ -14,11 +14,12 @@ const syne = Syne({
 });
 
 export const metadata: Metadata = {
-  title: "MIDL TxSim — Visualize the Bitcoin-Anchored EVM Flow",
+  title: "MIDL Sandbox — Visualize the Bitcoin-Anchored EVM Flow",
   description:
     "See every RPC call, SDK step, and BTC signing event when you send a transaction on MIDL. Built for developers onboarding to Bitcoin L2.",
+  icons: { icon: "/mild.jpg" },
   openGraph: {
-    title: "MIDL TxSim",
+    title: "MIDL Sandbox",
     description: "Visualize the MIDL 4-step transaction flow in real time.",
     url: "https://midl-txsim.vercel.app",
   },

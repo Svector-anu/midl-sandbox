@@ -229,6 +229,13 @@ body::before {
   flex-shrink: 0;
 }
 
+.nav-wallet-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+}
+
 /* ─── Faucet link ────────────────────────────────────────────── */
 
 .faucet-link {
