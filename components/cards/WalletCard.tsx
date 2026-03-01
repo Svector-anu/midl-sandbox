@@ -171,9 +171,9 @@ export default function WalletCard() {
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           <div style={{ display: "flex", gap: "8px" }}>
             {[
-              { label: "Xverse", connector: xverse },
-              { label: "Leather", connector: leather },
-            ].map(({ label, connector }) => (
+              { label: "Xverse", connector: xverse, bg: "var(--orange)", color: "#000", border: "none" },
+              { label: "Leather", connector: leather, bg: "transparent", color: "var(--text)", border: "1px solid #3a3a3a" },
+            ].map(({ label, connector, bg, color, border }) => (
               <button
                 key={label}
                 disabled={isConnecting}
@@ -181,31 +181,24 @@ export default function WalletCard() {
                 style={{
                   flex: 1,
                   height: "36px",
-                  background: "transparent",
-                  border: "1px solid var(--border-hi)",
+                  background: bg,
+                  border,
                   borderRadius: "4px",
                   fontFamily: "var(--font-sans)",
                   fontSize: "0.72rem",
-                  fontWeight: 500,
-                  color: "var(--muted-hi)",
+                  fontWeight: 600,
+                  color,
                   cursor: isConnecting ? "not-allowed" : "pointer",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   gap: "6px",
-                  transition: "border-color 0.15s, color 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "var(--orange)";
-                  e.currentTarget.style.color = "var(--orange)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "var(--border-hi)";
-                  e.currentTarget.style.color = "var(--muted-hi)";
+                  opacity: isConnecting && pendingId !== connector?.id ? 0.5 : 1,
+                  transition: "opacity 0.15s",
                 }}
               >
                 {pendingId === connector?.id && (
-                  <span style={{ display: "inline-block", width: "8px", height: "8px", border: "1px solid currentColor", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+                  <span style={{ display: "inline-block", width: "8px", height: "8px", border: `1px solid ${color}`, borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
                 )}
                 {label}
               </button>
