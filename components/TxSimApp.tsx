@@ -15,7 +15,7 @@ export default function TxSimApp() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-3 p-3 md:gap-4 md:p-4 md:h-[calc(100vh-72px)] overflow-auto md:overflow-hidden">
       {/* LEFT: stacked cards */}
-      <div className="flex flex-col gap-4 md:overflow-y-auto">
+      <div className="flex flex-col gap-4 md:overflow-y-auto order-2 md:order-1">
         <WalletCard />
         <ConfigCard onRun={run} onReset={reset} traceStatus={trace.status} />
         <InfoCard />
@@ -23,7 +23,7 @@ export default function TxSimApp() {
       </div>
 
       {/* RIGHT: single tall trace card */}
-      <div className="md:h-full overflow-hidden min-h-[60vh] md:min-h-0">
+      <div className="md:h-full overflow-hidden min-h-[60vh] md:min-h-0 order-1 md:order-2">
         <TracePanel trace={trace} paymentAddress={paymentAccount?.address} />
       </div>
     </div>
