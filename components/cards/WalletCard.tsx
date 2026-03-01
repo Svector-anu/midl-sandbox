@@ -141,7 +141,7 @@ export default function WalletCard() {
                 </span>
               </div>
               <button
-                onClick={disconnect}
+                onClick={() => disconnect()}
                 style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.6rem", fontFamily: "var(--font-mono)", color: "var(--muted)", padding: 0 }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = "var(--red)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = "var(--muted)"; }}
