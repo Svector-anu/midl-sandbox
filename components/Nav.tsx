@@ -29,17 +29,13 @@ export default function Nav() {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Left: pulse dot + title */}
+      {/* Left: logo + title */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <div
-          className="pulse-dot"
-          style={{
-            width: "6px",
-            height: "6px",
-            borderRadius: "50%",
-            background: "var(--orange)",
-            flexShrink: 0,
-          }}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/mild.jpg"
+          alt="MIDL"
+          style={{ width: "26px", height: "26px", borderRadius: "50%", flexShrink: 0 }}
         />
         <span
           style={{

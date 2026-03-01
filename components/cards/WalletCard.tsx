@@ -249,10 +249,6 @@ export default function WalletCard() {
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <span style={{ fontSize: "0.6rem", fontFamily: "var(--font-mono)", color: "var(--muted)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                // connect wallet to begin
-              </span>
-
               {[
                 { label: "Connect Xverse", connector: xverse, primary: true },
                 { label: "Connect Leather", connector: leather, primary: false },
@@ -326,21 +322,24 @@ export default function WalletCard() {
           </button>
 
           {expanded && (
-            <div style={{ padding: "0 16px 14px", display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ padding: "0 16px 14px", display: "flex", flexDirection: "column", gap: "10px" }}>
               {[
-                { label: "paymentAccount", arrow: "→ P2WPKH →", desc: "Pays BTC fees", color: "var(--yellow)", addr: paymentAddress },
-                { label: "ordinalsAccount", arrow: "→ P2TR →", desc: "Your EVM identity", color: "var(--orange)", addr: ordinalsAddress },
-              ].map(({ label, arrow, desc, color, addr }) => (
-                <div key={label} style={{ display: "flex", alignItems: "baseline", gap: "6px", flexWrap: "wrap" }}>
-                  <span style={{ fontSize: "0.6rem", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{label}</span>
-                  <span style={{ fontSize: "0.6rem", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{arrow}</span>
-                  <span style={{ fontSize: "0.6rem", color, fontFamily: "var(--font-mono)" }}>{desc}</span>
+                { type: "P2WPKH", desc: "Pays BTC fees", color: "var(--yellow)", addr: paymentAddress },
+                { type: "P2TR", desc: "EVM identity", color: "var(--orange)", addr: ordinalsAddress },
+              ].map(({ type, desc, color, addr }) => (
+                <div key={type} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span style={{ fontSize: "0.6rem", color, fontFamily: "var(--font-mono)", fontWeight: 600 }}>{type}</span>
+                    <span style={{ fontSize: "0.6rem", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>— {desc}</span>
+                  </div>
                   {isConnected && addr && (
-                    <span style={{ fontSize: "0.55rem", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>({trunc(addr)})</span>
+                    <span style={{ fontSize: "0.55rem", color: "var(--muted)", fontFamily: "var(--font-mono)", wordBreak: "break-all" }}>
+                      {addr}
+                    </span>
                   )}
                 </div>
               ))}
-              <div style={{ marginTop: "4px", padding: "8px 10px", background: "var(--orange-glow)", border: "1px solid var(--orange-dim)", borderRadius: "2px" }}>
+              <div style={{ padding: "8px 10px", background: "var(--orange-glow)", border: "1px solid var(--orange-dim)", borderRadius: "2px" }}>
                 <span style={{ fontSize: "0.6rem", color: "var(--text)", fontFamily: "var(--font-mono)" }}>
                   Mixing these up is the #1 MIDL bug.
                 </span>

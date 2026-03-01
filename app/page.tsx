@@ -12,9 +12,6 @@ export default function Home() {
         overflow: "hidden",
       }}
     >
-      {/* Scanline */}
-      <div aria-hidden className="scanline" />
-
       {/* Content */}
       <div
         style={{
