@@ -1,5 +1,6 @@
 import Nav from "@/components/Nav";
 import TxSimApp from "@/components/TxSimApp";
+import OnboardingModal from "@/components/OnboardingModal";
 
 export default function Home() {
   return (
@@ -23,6 +24,7 @@ export default function Home() {
           paddingTop: "72px",
         }}
       >
+        <OnboardingModal />
         <Nav />
         <TxSimApp />
       </div>
