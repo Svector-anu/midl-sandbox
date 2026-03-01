@@ -5,9 +5,9 @@
   --surface: #0f0f0f;
   --border: #1e1e1e;
   --border-hi: #2a2a2a;
-  --orange: #ff8c42;
-  --orange-dim: #7a4518;
-  --orange-glow: rgba(255, 140, 66, 0.12);
+  --orange: #ff8c37;
+  --orange-dim: #7a3a12;
+  --orange-glow: rgba(255, 140, 55, 0.12);
   --text: #e8e2d9;
   --muted: #5a5450;
   --muted-hi: #8a8480;
@@ -66,7 +66,7 @@ body::before {
   z-index: 0;
   background-image: radial-gradient(
     circle,
-    rgba(247, 83, 31, 0.15) 1px,
+    rgba(255, 140, 55, 0.15) 1px,
     transparent 1px
   );
   background-size: 24px 24px;
