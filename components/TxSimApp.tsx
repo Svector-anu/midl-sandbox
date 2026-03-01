@@ -13,7 +13,7 @@ export default function TxSimApp() {
   const { paymentAccount } = useWalletConnection();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-4 p-4 md:h-[calc(100vh-52px)] overflow-auto md:overflow-hidden">
+    <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-4 p-4 md:h-[calc(100vh-72px)] overflow-auto md:overflow-hidden">
       {/* LEFT: stacked cards */}
       <div className="flex flex-col gap-4 md:overflow-y-auto">
         <WalletCard />

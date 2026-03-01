@@ -220,6 +220,30 @@ body::before {
   color: var(--orange);
 }
 
+/* ─── Floating pill nav links ────────────────────────────────── */
+
+.nav-pill-link {
+  font-size: 0.68rem;
+  font-family: var(--font-mono), monospace;
+  color: #5a5450;
+  text-decoration: none;
+  padding: 0 14px;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.nav-pill-link:hover {
+  color: var(--orange);
+}
+
+.nav-pill-divider {
+  width: 1px;
+  height: 14px;
+  background: #2a2a2a;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
 /* ─── Faucet link ────────────────────────────────────────────── */
 
 .faucet-link {
@@ -259,6 +283,13 @@ body::before {
 
   .run-btn {
     min-height: 56px;
+  }
+}
+
+@media (max-width: 640px) {
+  .nav-pill-link--secondary,
+  .nav-pill-divider--secondary {
+    display: none;
   }
 }
 

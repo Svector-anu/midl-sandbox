@@ -23,6 +23,7 @@ export default function Home() {
           display: "flex",
           flexDirection: "column",
           height: "100%",
+          paddingTop: "72px",
         }}
       >
         <Nav />
