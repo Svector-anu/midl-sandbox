@@ -46,7 +46,7 @@ const PHASE_EXPLANATIONS: { phase: string; text: string }[] = [
   },
   {
     phase: "PHASE 3 — Broadcast + Confirm",
-    text: "Your signed Bitcoin transaction is broadcast to the Bitcoin network. The EVM intent is signed with a reference to that BTC txid, then submitted to the MIDL sequencer. Confirmation takes 10–15 min on staging because the EVM state change is anchored to a real Bitcoin block.",
+    text: "Your signed Bitcoin transaction is broadcast to the Bitcoin network. The EVM intent is signed with a reference to that BTC txid, then submitted to the MIDL sequencer. EVM confirmation follows once the state change is anchored to a Bitcoin block.",
   },
 ];
 

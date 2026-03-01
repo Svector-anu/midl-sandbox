@@ -12,7 +12,7 @@ millisecond.
 1. **EVM Prefetch** — eth_chainId, nonce, estimateGasMulti
 2. **Add Intention** — addTxIntention() queues the EVM calldata
 3. **BTC Signing** — PSBT construction + wallet signing popup
-4. **Broadcast + Confirm** — Bitcoin broadcast → EVM confirmation (~10-15 min)
+4. **Broadcast + Confirm** — Bitcoin broadcast → EVM confirmation (anchored to a Bitcoin block)
 
 ## Why this exists
 
