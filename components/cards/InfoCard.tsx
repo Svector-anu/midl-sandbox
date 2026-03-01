@@ -125,22 +125,6 @@ export default function InfoCard() {
         ))}
       </div>
 
-      {/* Description */}
-      <span
-        style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: "0.62rem",
-          color: "var(--muted)",
-          lineHeight: 1.7,
-        }}
-      >
-        MIDL produces EVM blocks every ~{displayTime}, then anchors state to
-        Bitcoin every ~10–15 min.
-        {blockHeight !== null && (
-          <> Block <span style={{ color: "var(--muted-hi)" }}>#{blockHeight.toLocaleString()}</span>.</>
-        )}
-      </span>
-
       {/* Footer meta */}
       <div style={{ borderTop: "1px solid var(--border)", paddingTop: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "var(--muted)", letterSpacing: "0.08em" }}>
