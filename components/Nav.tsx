@@ -18,7 +18,7 @@ export default function Nav() {
         height: "48px",
         borderRadius: "100px",
         background: "#111111",
-        border: `1px solid ${hovered ? "rgba(247,83,31,0.3)" : "#2a2a2a"}`,
+        border: `1px solid ${hovered ? "rgba(255,140,66,0.3)" : "#2a2a2a"}`,
         boxShadow: "0 4px 24px rgba(0,0,0,0.6)",
         display: "flex",
         alignItems: "center",
