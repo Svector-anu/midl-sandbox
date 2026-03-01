@@ -2,21 +2,14 @@
 
 import { useEffect, useState } from "react";
 
-const STORAGE_KEY = "midl-sandbox-welcomed";
-
 export default function OnboardingModal() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem(STORAGE_KEY)) {
-      setVisible(true);
-    }
+    setVisible(true);
   }, []);
 
-  const dismiss = () => {
-    localStorage.setItem(STORAGE_KEY, "1");
-    setVisible(false);
-  };
+  const dismiss = () => setVisible(false);
 
   if (!visible) return null;
 
