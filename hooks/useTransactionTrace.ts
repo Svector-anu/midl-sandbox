@@ -252,7 +252,7 @@ export function useTransactionTrace() {
         const pollInterval = setInterval(() => {
           const elapsed = Math.round((Date.now() - t) / 1000);
           updateEvent(id, {
-            sublabel: `⏳ polling... ${elapsed}s elapsed (staging ~10–30 min is normal)`,
+            sublabel: `⏳ polling... ${elapsed}s elapsed — wait a bit`,
           });
         }, 5000);
 
