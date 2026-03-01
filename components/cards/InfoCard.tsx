@@ -3,11 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { STAGING_RPC, CHAIN_ID } from "@/lib/constants";
 
-interface NetworkState {
-  blockHeight: number | null;
-  avgBlockTime: number | null;
-  error: boolean;
-}
+const DOT_COUNT = 12;
 
 async function rpcCall(method: string, params: unknown[]) {
   const res = await fetch(STAGING_RPC, {
@@ -21,13 +17,22 @@ async function rpcCall(method: string, params: unknown[]) {
 }
 
 export default function InfoCard() {
-  const [network, setNetwork] = useState<NetworkState>({
-    blockHeight: null,
-    avgBlockTime: null,
-    error: false,
-  });
-  const [flash, setFlash] = useState(false);
+  const [blockHeight, setBlockHeight] = useState<number | null>(null);
+  const [avgBlockTime, setAvgBlockTime] = useState<number | null>(null);
+  const [activeDot, setActiveDot] = useState(0);
   const prevBlock = useRef<number | null>(null);
+  const dotTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Advance the dot ticker every ~avgBlockTime seconds
+  useEffect(() => {
+    const interval = avgBlockTime ? avgBlockTime * 1000 : 4000;
+    dotTimer.current = setInterval(() => {
+      setActiveDot((d) => (d + 1) % DOT_COUNT);
+    }, interval);
+    return () => {
+      if (dotTimer.current) clearInterval(dotTimer.current);
+    };
+  }, [avgBlockTime]);
 
   useEffect(() => {
     let cancelled = false;
@@ -42,20 +47,18 @@ export default function InfoCard() {
         const olderRaw = await rpcCall("eth_getBlockByNumber", [olderHex, false]);
         const olderTimestamp = parseInt(olderRaw.timestamp, 16);
 
-        const avgBlockTime = Math.round((latestTimestamp - olderTimestamp) / 10);
+        const avg = Math.round((latestTimestamp - olderTimestamp) / 10);
 
         if (!cancelled) {
           if (prevBlock.current !== null && prevBlock.current !== latestNumber) {
-            setFlash(true);
-            setTimeout(() => setFlash(false), 600);
+            setActiveDot((d) => (d + 1) % DOT_COUNT);
           }
           prevBlock.current = latestNumber;
-          setNetwork({ blockHeight: latestNumber, avgBlockTime, error: false });
+          setBlockHeight(latestNumber);
+          setAvgBlockTime(avg);
         }
       } catch {
-        if (!cancelled) {
-          setNetwork((prev) => ({ ...prev, error: true }));
-        }
+        // fail silently, keep last values
       }
     }
 
@@ -67,103 +70,86 @@ export default function InfoCard() {
     };
   }, []);
 
-  const val = (n: number | null, prefix = "", suffix = "") => {
-    if (network.error) return "—";
-    if (n === null) return "...";
-    return `${prefix}${n.toLocaleString()}${suffix}`;
-  };
+  const displayTime = avgBlockTime !== null ? `${avgBlockTime}s` : "...";
 
   return (
-    <div className="card" style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: "10px" }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+    <div className="card" style={{ padding: "20px 20px 16px", display: "flex", flexDirection: "column", gap: "14px" }}>
+      {/* Big stat */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+          <span
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "2.6rem",
+              fontWeight: 700,
+              color: "var(--green)",
+              lineHeight: 1,
+              letterSpacing: "-0.03em",
+            }}
+          >
+            {displayTime}
+          </span>
+        </div>
         <span
           style={{
             fontFamily: "var(--font-mono)",
-            fontSize: "0.55rem",
+            fontSize: "0.6rem",
             color: "var(--muted)",
-            letterSpacing: "0.12em",
+            letterSpacing: "0.14em",
             textTransform: "uppercase",
           }}
         >
-          // network state
+          block times
         </span>
-        <span
-          className="pulse-dot"
-          style={{ width: "5px", height: "5px", borderRadius: "50%", background: "var(--green)", flexShrink: 0 }}
-        />
       </div>
 
-      {/* Stats */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-        <StatRow
-          label="block height"
-          value={val(network.blockHeight, "#")}
-          highlight={flash}
-        />
-        <StatRow label="avg block time" value={val(network.avgBlockTime, "", "s")} />
-        <StatRow label="btc anchoring" value="~10–15 min" muted />
+      {/* Dot row — live block rhythm */}
+      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+        {Array.from({ length: DOT_COUNT }).map((_, i) => (
+          <span
+            key={i}
+            style={{
+              display: "inline-block",
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%",
+              background: i === activeDot
+                ? "var(--green)"
+                : i < activeDot
+                ? "rgba(34,197,94,0.35)"
+                : "var(--border-hi)",
+              flexShrink: 0,
+              transition: "background 0.3s ease",
+            }}
+          />
+        ))}
       </div>
 
-      {/* Footer */}
-      <div style={{ borderTop: "1px solid var(--border)", paddingTop: "8px", display: "flex", flexDirection: "column", gap: "3px" }}>
-        <FooterRow label="rpc" value="rpc.staging.midl.xyz" />
-        <FooterRow label="chain" value={String(CHAIN_ID)} />
-      </div>
-    </div>
-  );
-}
-
-function StatRow({
-  label,
-  value,
-  highlight,
-  muted,
-}: {
-  label: string;
-  value: string;
-  highlight?: boolean;
-  muted?: boolean;
-}) {
-  return (
-    <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "8px" }}>
+      {/* Description */}
       <span
         style={{
           fontFamily: "var(--font-mono)",
-          fontSize: "0.6rem",
+          fontSize: "0.62rem",
           color: "var(--muted)",
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-          flexShrink: 0,
+          lineHeight: 1.7,
         }}
       >
-        {label}
+        MIDL produces EVM blocks every ~{displayTime}, then anchors state to
+        Bitcoin every ~10–15 min.
+        {blockHeight !== null && (
+          <> Block <span style={{ color: "var(--muted-hi)" }}>#{blockHeight.toLocaleString()}</span>.</>
+        )}
       </span>
-      <span
-        style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: "0.75rem",
-          fontWeight: 600,
-          color: muted ? "var(--muted-hi)" : highlight ? "var(--orange)" : "var(--text)",
-          transition: "color 0.4s ease",
-          letterSpacing: "0.02em",
-        }}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
 
-function FooterRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "8px" }}>
-      <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "var(--muted)", letterSpacing: "0.1em", textTransform: "uppercase", flexShrink: 0 }}>
-        {label}
-      </span>
-      <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "var(--muted-hi)" }}>
-        {value}
-      </span>
+      {/* Footer meta */}
+      <div style={{ borderTop: "1px solid var(--border)", paddingTop: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "var(--muted)", letterSpacing: "0.08em" }}>
+          rpc.staging.midl.xyz
+        </span>
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "var(--muted)", letterSpacing: "0.08em" }}>
+          chain {CHAIN_ID}
+        </span>
+      </div>
     </div>
   );
 }

@@ -105,20 +105,37 @@ export default function ConfigCard({ onRun, onReset, traceStatus }: ConfigCardPr
           )}
 
           <button
-            className="glass-btn run-btn"
+            className="run-btn"
             disabled={isDisabled}
             onClick={() =>
               !isDisabled &&
               onRun({ feeRate: customFeeRate ? feeRate : undefined, debugMode })
             }
-            style={{ width: "100%", padding: "14px 16px", borderRadius: "3px", fontFamily: "var(--font-sans)", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", cursor: isDisabled ? "not-allowed" : "pointer", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
+            style={{
+              width: "100%",
+              padding: "14px 16px",
+              borderRadius: "3px",
+              border: "none",
+              background: isDisabled ? "var(--orange-dim)" : "var(--orange)",
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.8rem",
+              fontWeight: 700,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              cursor: isDisabled ? "not-allowed" : "pointer",
+              color: isDisabled ? "rgba(0,0,0,0.4)" : "#000",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              transition: "background 0.15s",
+              opacity: isDisabled ? 0.5 : 1,
+            }}
           >
-            <span style={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", gap: "8px" }}>
-              {traceStatus === "running" && (
-                <span style={{ display: "inline-block", width: "8px", height: "8px", border: "1px solid rgba(0,0,0,0.4)", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
-              )}
-              {traceStatus === "running" ? "Running..." : "Run Transaction →"}
-            </span>
+            {traceStatus === "running" && (
+              <span style={{ display: "inline-block", width: "8px", height: "8px", border: "1px solid rgba(0,0,0,0.5)", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+            )}
+            {traceStatus === "running" ? "Running..." : "Run Transaction →"}
           </button>
 
           {!isConnected && (
