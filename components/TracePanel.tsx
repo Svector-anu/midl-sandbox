@@ -270,11 +270,10 @@ function SummaryBar({ trace }: { trace: TraceState }) {
 
   return (
     <div
-      className={isDone ? "glass-orange" : undefined}
       style={{
         padding: "14px 24px",
         borderBottom: "1px solid var(--border)",
-        background: isDone ? undefined : "rgba(239,68,68,0.05)",
+        background: isDone ? "rgba(34,197,94,0.05)" : "rgba(239,68,68,0.05)",
         display: "flex",
         alignItems: "center",
         gap: "12px",

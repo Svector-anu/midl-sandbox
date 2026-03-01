@@ -451,7 +451,7 @@ export default function ControlsPanel({ onRun, onReset, traceStatus }: ControlsP
       {/* Spin keyframe injected once */}
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
-      <aside className="controls-panel glass glass-interactive">
+      <aside className="controls-panel">
         {/* ── Section 1: Wallet ─────────────────────────────── */}
         <div style={{ padding: "20px", borderBottom: DIVIDER }}>
           {isConnected && paymentAddress && ordinalsAddress ? (
@@ -856,7 +856,7 @@ export default function ControlsPanel({ onRun, onReset, traceStatus }: ControlsP
             </button>
           )}
           <button
-            className="glass-btn run-btn"
+            className="run-btn"
             disabled={!isConnected || traceStatus === "running"}
             onClick={() =>
               isConnected &&
@@ -869,36 +869,48 @@ export default function ControlsPanel({ onRun, onReset, traceStatus }: ControlsP
             style={{
               width: "100%",
               padding: "14px 16px",
+              background:
+                !isConnected || traceStatus === "running"
+                  ? "var(--surface)"
+                  : "var(--orange)",
+              color:
+                !isConnected || traceStatus === "running"
+                  ? "var(--muted)"
+                  : "#000",
+              border:
+                !isConnected || traceStatus === "running"
+                  ? "1px solid var(--border)"
+                  : "none",
               borderRadius: "3px",
               fontFamily: "var(--font-sans)",
               fontSize: "0.8rem",
               fontWeight: 700,
               letterSpacing: "0.06em",
               textTransform: "uppercase",
-              cursor: !isConnected || traceStatus === "running" ? "not-allowed" : "pointer",
-              color: "#000",
+              cursor:
+                !isConnected || traceStatus === "running"
+                  ? "not-allowed"
+                  : "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: "8px",
             }}
           >
-            <span style={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", gap: "8px" }}>
-              {traceStatus === "running" && (
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: "8px",
-                    height: "8px",
-                    border: "1px solid rgba(0,0,0,0.4)",
-                    borderTopColor: "transparent",
-                    borderRadius: "50%",
-                    animation: "spin 0.6s linear infinite",
-                  }}
-                />
-              )}
-              {traceStatus === "running" ? "Running..." : "Run Transaction →"}
-            </span>
+            {traceStatus === "running" && (
+              <span
+                style={{
+                  display: "inline-block",
+                  width: "8px",
+                  height: "8px",
+                  border: "1px solid var(--muted)",
+                  borderTopColor: "transparent",
+                  borderRadius: "50%",
+                  animation: "spin 0.6s linear infinite",
+                }}
+              />
+            )}
+            {traceStatus === "running" ? "Running..." : "Run Transaction →"}
           </button>
           {!isConnected && (
             <p
