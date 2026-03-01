@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { STAGING_RPC, CHAIN_ID } from "@/lib/constants";
+import { STAGING_RPC } from "@/lib/constants";
 
 const DOT_COUNT = 12;
 
@@ -125,15 +125,18 @@ export default function InfoCard() {
         ))}
       </div>
 
-      {/* Footer meta */}
-      <div style={{ borderTop: "1px solid var(--border)", paddingTop: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "var(--muted)", letterSpacing: "0.08em" }}>
-          rpc.staging.midl.xyz
-        </span>
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "var(--muted)", letterSpacing: "0.08em" }}>
-          chain {CHAIN_ID}
-        </span>
-      </div>
+      {/* Description */}
+      <span
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.62rem",
+          color: "var(--muted)",
+          lineHeight: 1.7,
+        }}
+      >
+        MIDL produces blocks every ~{displayTime}, enabling near-instant EVM
+        confirmation for transactions.
+      </span>
     </div>
   );
 }
