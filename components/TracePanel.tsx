@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { TraceBadge, TraceEvent, TracePhase, TraceState } from "@/types/trace";
 import { BLOCKSCOUT_URL, FAUCET_URL, MEMPOOL_URL } from "@/lib/constants";
 
@@ -552,6 +552,75 @@ function isUtxoError(msg?: string): boolean {
   return lower.includes("faucet") || lower.includes("utxos") || lower.includes("utxo");
 }
 
+function TracePanelHeader({ trace }: { trace: TraceState }) {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    if (trace.status !== "running") {
+      setElapsed(0);
+      return;
+    }
+    const start = trace.startedAt ?? Date.now();
+    setElapsed(Date.now() - start);
+    const interval = setInterval(() => {
+      setElapsed(Date.now() - start);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [trace.status, trace.startedAt]);
+
+  const timerDisplay =
+    trace.status === "done" && trace.totalDuration !== undefined
+      ? `${(trace.totalDuration / 1000).toFixed(1)}s`
+      : trace.status === "running"
+      ? `${Math.floor(elapsed / 1000)}s`
+      : null;
+
+  return (
+    <div
+      style={{
+        padding: "12px 16px",
+        borderBottom: "1px solid var(--border)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: "12px",
+        flexShrink: 0,
+      }}
+    >
+      <span
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.55rem",
+          color: "var(--muted)",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+      >
+        trace{" "}
+        <span style={{ color: "var(--muted-hi)" }}>
+          addTxIntention → finalizeBTC → signIntention → broadcast
+        </span>
+      </span>
+      {timerDisplay && (
+        <span
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.6rem",
+            color: trace.status === "running" ? "var(--orange)" : "var(--muted-hi)",
+            letterSpacing: "0.04em",
+            flexShrink: 0,
+          }}
+        >
+          {timerDisplay}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function TracePanel({
   trace,
   paymentAddress,
@@ -576,7 +645,9 @@ export default function TracePanel({
     trace.status === "error" && isUtxoError(trace.errorMessage);
 
   return (
-    <main className="trace-panel">
+    <div className="card" style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
+      <TracePanelHeader trace={trace} />
+      <main style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
       {/* No-UTXO error card — replaces summary bar */}
       {showUtxoCard && <NoUtxoErrorCard paymentAddress={paymentAddress} />}
 
@@ -683,6 +754,7 @@ export default function TracePanel({
           })}
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

@@ -12,18 +12,6 @@ export default function Home() {
         overflow: "hidden",
       }}
     >
-      {/* Grid background */}
-      <div
-        aria-hidden
-        className="grid-bg"
-        style={{
-          position: "fixed",
-          inset: 0,
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
-
       {/* Scanline */}
       <div aria-hidden className="scanline" />
 

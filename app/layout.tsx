@@ -35,6 +35,14 @@ export default function RootLayout({
         className={`${jetbrainsMono.variable} ${syne.variable} antialiased`}
         style={{ background: "#080808" }}
       >
+        <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+          <defs>
+            <filter id="glass-distort" x="-20%" y="-20%" width="140%" height="140%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves={3} seed={2} result="noise" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale={4} xChannelSelector="R" yChannelSelector="G" result="displaced" />
+            </filter>
+          </defs>
+        </svg>
         <MidlProviders>{children}</MidlProviders>
       </body>
     </html>
