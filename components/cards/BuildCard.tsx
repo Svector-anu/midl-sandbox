@@ -12,18 +12,6 @@ export default function BuildCard() {
     >
       <span
         style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: "0.55rem",
-          color: "var(--muted)",
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-        }}
-      >
-        // build on midl
-      </span>
-
-      <span
-        style={{
           fontFamily: "var(--font-sans)",
           fontSize: "0.9rem",
           fontWeight: 700,
@@ -47,7 +35,7 @@ export default function BuildCard() {
       </span>
 
       <a
-        href="https://docs.midl.xyz"
+        href="https://js.midl.xyz/docs"
         target="_blank"
         rel="noopener noreferrer"
         style={{

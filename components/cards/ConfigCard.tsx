@@ -57,10 +57,6 @@ export default function ConfigCard({ onRun, onReset, traceStatus }: ConfigCardPr
       <div className="card" style={{ display: "flex", flexDirection: "column" }}>
         {/* Toggles section */}
         <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
-          <span style={{ fontSize: "0.6rem", fontFamily: "var(--font-mono)", color: "var(--muted)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-            // optimizations
-          </span>
-
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
               <span style={{ fontSize: "0.7rem", fontFamily: "var(--font-mono)", color: "var(--text)" }}>
