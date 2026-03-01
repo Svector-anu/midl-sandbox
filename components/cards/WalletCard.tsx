@@ -220,7 +220,7 @@ export default function WalletCard() {
   return (
     <>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      <div className="card glass glass-interactive" style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+      <div className="card" style={{ display: "flex", flexDirection: "column", gap: "0" }}>
         {/* Wallet section */}
         <div style={{ padding: "16px" }}>
           {isConnected && paymentAddress && ordinalsAddress ? (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { STAGING_RPC, CHAIN_ID } from "@/lib/constants";
 
 interface NetworkState {
@@ -26,6 +26,8 @@ export default function InfoCard() {
     avgBlockTime: null,
     error: false,
   });
+  const [flash, setFlash] = useState(false);
+  const prevBlock = useRef<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -43,6 +45,11 @@ export default function InfoCard() {
         const avgBlockTime = Math.round((latestTimestamp - olderTimestamp) / 10);
 
         if (!cancelled) {
+          if (prevBlock.current !== null && prevBlock.current !== latestNumber) {
+            setFlash(true);
+            setTimeout(() => setFlash(false), 600);
+          }
+          prevBlock.current = latestNumber;
           setNetwork({ blockHeight: latestNumber, avgBlockTime, error: false });
         }
       } catch {
@@ -60,132 +67,70 @@ export default function InfoCard() {
     };
   }, []);
 
-  const fmt = (n: number | null, suffix = "") =>
-    n === null ? "..." : network.error ? "—" : `${n.toLocaleString()}${suffix}`;
+  const val = (n: number | null, prefix = "", suffix = "") => {
+    if (network.error) return "—";
+    if (n === null) return "...";
+    return `${prefix}${n.toLocaleString()}${suffix}`;
+  };
 
   return (
-    <div
-      className="card"
-      style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}
-    >
-      {/* Header label */}
-      <span
-        style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: "0.55rem",
-          color: "var(--muted)",
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-        }}
-      >
-        // network state
-      </span>
-
-      {/* Block height */}
-      <Stat
-        label="block height"
-        value={
-          network.blockHeight !== null && !network.error
-            ? `#${network.blockHeight.toLocaleString()}`
-            : network.error
-            ? "—"
-            : "..."
-        }
-        accent
-      />
-
-      {/* Avg block time */}
-      <Stat
-        label="avg block time"
-        value={fmt(network.avgBlockTime, "s")}
-      />
-
-      {/* Confirmation — de-emphasized */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+    <div className="card" style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: "10px" }}>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
         <span
           style={{
             fontFamily: "var(--font-mono)",
-            fontSize: "0.6rem",
+            fontSize: "0.55rem",
             color: "var(--muted)",
             letterSpacing: "0.12em",
             textTransform: "uppercase",
           }}
         >
-          btc anchoring
+          // network state
         </span>
         <span
-          style={{
-            fontFamily: "var(--font-sans)",
-            fontSize: "0.85rem",
-            fontWeight: 600,
-            color: "var(--muted-hi)",
-          }}
-        >
-          ~10–15 min
-        </span>
+          className="pulse-dot"
+          style={{ width: "5px", height: "5px", borderRadius: "50%", background: "var(--green)", flexShrink: 0 }}
+        />
       </div>
 
-      {/* Divider */}
-      <div style={{ borderTop: "1px solid var(--border)" }} />
+      {/* Stats */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+        <StatRow
+          label="block height"
+          value={val(network.blockHeight, "#")}
+          highlight={flash}
+        />
+        <StatRow label="avg block time" value={val(network.avgBlockTime, "", "s")} />
+        <StatRow label="btc anchoring" value="~10–15 min" muted />
+      </div>
 
-      {/* RPC + Chain ID */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-        <MetaRow label="rpc" value="rpc.staging.midl.xyz" />
-        <MetaRow label="chain id" value={String(CHAIN_ID)} />
+      {/* Footer */}
+      <div style={{ borderTop: "1px solid var(--border)", paddingTop: "8px", display: "flex", flexDirection: "column", gap: "3px" }}>
+        <FooterRow label="rpc" value="rpc.staging.midl.xyz" />
+        <FooterRow label="chain" value={String(CHAIN_ID)} />
       </div>
     </div>
   );
 }
 
-function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+function StatRow({
+  label,
+  value,
+  highlight,
+  muted,
+}: {
+  label: string;
+  value: string;
+  highlight?: boolean;
+  muted?: boolean;
+}) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-        <span
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "0.6rem",
-            color: "var(--muted)",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-          }}
-        >
-          {label}
-        </span>
-        {accent && (
-          <span
-            className="pulse-dot"
-            style={{
-              width: "5px",
-              height: "5px",
-              borderRadius: "50%",
-              background: "var(--green)",
-              flexShrink: 0,
-            }}
-          />
-        )}
-      </div>
-      <span
-        style={{
-          fontFamily: "var(--font-sans)",
-          fontSize: "1rem",
-          fontWeight: 700,
-          color: "var(--text)",
-        }}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
-
-function MetaRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div style={{ display: "flex", gap: "8px", alignItems: "baseline" }}>
+    <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "8px" }}>
       <span
         style={{
           fontFamily: "var(--font-mono)",
-          fontSize: "0.55rem",
+          fontSize: "0.6rem",
           color: "var(--muted)",
           letterSpacing: "0.1em",
           textTransform: "uppercase",
@@ -197,13 +142,26 @@ function MetaRow({ label, value }: { label: string; value: string }) {
       <span
         style={{
           fontFamily: "var(--font-mono)",
-          fontSize: "0.65rem",
-          color: "var(--muted-hi)",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
+          fontSize: "0.75rem",
+          fontWeight: 600,
+          color: muted ? "var(--muted-hi)" : highlight ? "var(--orange)" : "var(--text)",
+          transition: "color 0.4s ease",
+          letterSpacing: "0.02em",
         }}
       >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function FooterRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "8px" }}>
+      <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "var(--muted)", letterSpacing: "0.1em", textTransform: "uppercase", flexShrink: 0 }}>
+        {label}
+      </span>
+      <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "var(--muted-hi)" }}>
         {value}
       </span>
     </div>
