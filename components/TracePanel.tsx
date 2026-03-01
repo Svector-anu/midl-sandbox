@@ -213,7 +213,7 @@ function PhaseSection({
           display: "flex",
           alignItems: "center",
           gap: "8px",
-          padding: "12px 24px 6px",
+          padding: "12px 16px 6px",
         }}
       >
         <span
@@ -254,7 +254,7 @@ function PhaseSection({
       </div>
 
       {/* Event rows */}
-      <div style={{ padding: "0 24px 8px 36px" }}>
+      <div style={{ padding: "0 16px 8px 24px" }}>
         {events.map((event) => (
           <EventRow key={event.id} event={event} />
         ))}
@@ -271,7 +271,7 @@ function SummaryBar({ trace }: { trace: TraceState }) {
   return (
     <div
       style={{
-        padding: "14px 24px",
+        padding: "12px 16px",
         borderBottom: "1px solid var(--border)",
         background: isDone ? "rgba(34,197,94,0.05)" : "rgba(239,68,68,0.05)",
         display: "flex",
@@ -666,7 +666,7 @@ export default function TracePanel({
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            padding: "40px",
+            padding: "24px 16px",
             gap: "12px",
           }}
         >
@@ -686,7 +686,7 @@ export default function TracePanel({
               fontSize: "0.6rem",
               color: "var(--muted)",
               textAlign: "center",
-              maxWidth: "360px",
+              maxWidth: "100%",
               lineHeight: 1.7,
               opacity: 0.7,
             }}

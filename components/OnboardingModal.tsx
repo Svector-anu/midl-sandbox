@@ -31,7 +31,7 @@ export default function OnboardingModal() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "24px",
+        padding: "16px",
         backdropFilter: "blur(4px)",
       }}
     >
@@ -41,7 +41,7 @@ export default function OnboardingModal() {
           background: "#111111",
           border: "1px solid #2a2a2a",
           borderRadius: "12px",
-          padding: "32px",
+          padding: "clamp(16px, 5vw, 32px)",
           maxWidth: "420px",
           width: "100%",
           display: "flex",
@@ -91,7 +91,7 @@ export default function OnboardingModal() {
             style={{
               margin: 0,
               fontFamily: "var(--font-sans)",
-              fontSize: "1rem",
+              fontSize: "clamp(0.85rem, 4vw, 1rem)",
               fontWeight: 600,
               color: "var(--text)",
               lineHeight: 1.4,

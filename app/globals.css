@@ -236,6 +236,16 @@ body::before {
   padding: 0 14px;
 }
 
+.nav-title {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+  white-space: nowrap;
+}
+
 /* ─── Faucet link ────────────────────────────────────────────── */
 
 .faucet-link {
@@ -282,6 +292,16 @@ body::before {
   .nav-pill-link--secondary,
   .nav-pill-divider--secondary {
     display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-title {
+    display: none;
+  }
+
+  body::before {
+    background-size: 32px 32px;
   }
 }
 

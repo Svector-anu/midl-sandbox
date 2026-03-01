@@ -80,7 +80,7 @@ export default function InfoCard() {
           <span
             style={{
               fontFamily: "var(--font-sans)",
-              fontSize: "2.6rem",
+              fontSize: "clamp(1.8rem, 8vw, 2.6rem)",
               fontWeight: 700,
               color: "var(--green)",
               lineHeight: 1,

@@ -23,7 +23,7 @@ export default function Nav() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 20px",
+        padding: "0 14px",
         transition: "border-color 0.2s ease",
       }}
       onMouseEnter={() => setHovered(true)}
@@ -37,19 +37,7 @@ export default function Nav() {
           alt="MIDL"
           style={{ width: "26px", height: "26px", borderRadius: "50%", flexShrink: 0 }}
         />
-        <span
-          style={{
-            fontFamily: "var(--font-sans)",
-            fontWeight: 700,
-            fontSize: "0.82rem",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color: "var(--text)",
-            whiteSpace: "nowrap",
-          }}
-        >
-          MIDL Sandbox
-        </span>
+        <span className="nav-title">MIDL Sandbox</span>
       </div>
 
       {/* Center: staging badge */}
