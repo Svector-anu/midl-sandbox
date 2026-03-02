@@ -49,7 +49,7 @@ export default function Nav() {
               boxShadow: "0 0 6px 2px rgba(247,83,31,0.5)",
             }}
           />
-          <span className="nav-title">MIDL TxSim</span>
+          <span className="nav-title">MIDL sandbox</span>
         </div>
 
         {/* Center: staging badge */}
