@@ -1,4 +1,4 @@
-# MIDL TxSim
+# MIDL sandbox
 
 Visualize every step of the MIDL 4-step transaction flow in real time.
 
